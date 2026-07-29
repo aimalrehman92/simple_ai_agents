@@ -54,6 +54,8 @@ Thought: briefly state what you need to plan.
 Action: action_name: valid JSON input
 PAUSE
 
+Stop generating immediately after PAUSE. Do not include an answer in the same response as an action.
+
 After receiving an Observation, either request another action or provide the final answer.
 
 Use this format for the final response:

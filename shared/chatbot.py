@@ -6,7 +6,8 @@ import os
 from typing import Final
 
 from openai import OpenAI
-
+from dotenv import load_dotenv
+load_dotenv()
 
 DEFAULT_MODEL: Final[str] = "gpt-5.4-nano"
 

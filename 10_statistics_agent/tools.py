@@ -259,7 +259,7 @@ def calculate_correlation(tool_input: str) -> str:
     parsed_x: list[float] = []
     parsed_y: list[float] = []
 
-    for x_value, y_value in zip(x_values, y_values, strict=True):
+    for x_value, y_value in zip(x_values, y_values):
         try:
             x_number = float(x_value)
             y_number = float(y_value)
@@ -277,7 +277,22 @@ def calculate_correlation(tool_input: str) -> str:
             "Correlation is undefined when either variable has no variation."
         )
 
-    correlation = statistics.correlation(parsed_x, parsed_y)
+    mean_x = statistics.fmean(parsed_x)
+    mean_y = statistics.fmean(parsed_y)
+
+    numerator = sum(
+        (x - mean_x) * (y - mean_y)
+        for x, y in zip(parsed_x, parsed_y)
+    )
+
+    denominator_x = sum((x - mean_x) ** 2 for x in parsed_x)
+    denominator_y = sum((y - mean_y) ** 2 for y in parsed_y)
+
+    correlation = numerator / math.sqrt(
+        denominator_x * denominator_y
+    )
+
+    
 
     if correlation > 0:
         direction = "positive"

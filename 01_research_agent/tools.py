@@ -54,7 +54,10 @@ def _extract_arxiv_id(value: str) -> str:
         match = re.search(pattern, value, flags=re.IGNORECASE)
 
         if match:
-            return match.group(1).removesuffix(".pdf")
+            arxiv_id = match.group(1)
+            if arxiv_id.endswith(".pdf"):
+                arxiv_id = arxiv_id[:-4]
+            return arxiv_id
 
     raise ValueError("The input does not contain a valid arXiv identifier.")
 

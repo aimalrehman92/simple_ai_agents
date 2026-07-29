@@ -26,6 +26,7 @@ class Agent:
         max_turns: int = 5,
         model: str | None = None,
         verbose: bool = True,
+        require_tool: bool = False,
     ) -> None:
         if not system_prompt.strip():
             raise ValueError("A non-empty system prompt is required.")
@@ -39,6 +40,7 @@ class Agent:
         self.max_turns = max_turns
         self.known_actions = dict(known_actions)
         self.verbose = verbose
+        self.require_tool = require_tool
 
         chatbot_options = {"system_prompt": system_prompt}
 
@@ -54,7 +56,9 @@ class Agent:
             raise ValueError("Question must be a non-empty string.")
 
         self.bot.reset()
+
         next_prompt = question.strip()
+        tools_used = 0
 
         for turn in range(1, self.max_turns + 1):
             result = self.bot(next_prompt)
@@ -66,6 +70,17 @@ class Agent:
             action_match = ACTION_PATTERN.search(result)
 
             if action_match is None:
+                if self.require_tool and tools_used == 0:
+                    next_prompt = (
+                        "You have not used a tool yet. You must not answer, "
+                        "promise to fetch information, or ask the user to wait. "
+                        "Call the appropriate tool now using exactly:\n"
+                        "Thought: brief reason\n"
+                        "Action: action_name: action input\n"
+                        "PAUSE"
+                    )
+                    continue
+
                 return result
 
             action_name, action_input = action_match.groups()
@@ -95,10 +110,17 @@ class Agent:
             elif not isinstance(observation, str):
                 observation = str(observation)
 
+            tools_used += 1
+
             if self.verbose:
                 print(f"Observation: {observation}")
 
-            next_prompt = f"Observation: {observation}"
+            next_prompt = (
+                f"Observation from {action_name}:\n{observation}\n\n"
+                "Use this observation to continue. "
+                "Call another tool if the user's request still requires it; "
+                "otherwise provide the final answer."
+            )
 
         raise RuntimeError(
             f"The agent did not produce a final answer within "

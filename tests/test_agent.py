@@ -86,7 +86,13 @@ class AgentLoopTests(unittest.TestCase):
             fake_bot.prompts,
             [
                 "Convert this text to uppercase.",
-                "Observation: HELLO WORLD",
+                (
+                    "Observation from uppercase:\n"
+                    "HELLO WORLD\n\n"
+                    "Use this observation to continue. "
+                    "Call another tool if the user's request still requires it; "
+                    "otherwise provide the final answer."
+                ),
             ],
         )
 
@@ -144,8 +150,12 @@ class AgentLoopTests(unittest.TestCase):
         self.assertEqual(
             fake_bot.prompts[1],
             (
-                "Observation: Tool 'failing_tool' failed with "
-                "RuntimeError: Something went wrong."
+            "Observation from failing_tool:\n"
+            "Tool 'failing_tool' failed with "
+            "RuntimeError: Something went wrong.\n\n"
+            "Use this observation to continue. "
+            "Call another tool if the user's request still requires it; "
+            "otherwise provide the final answer."
             ),
         )
 

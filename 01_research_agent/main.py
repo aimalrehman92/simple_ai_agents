@@ -25,7 +25,8 @@ def main() -> None:
     agent = Agent(
         system_prompt=SYSTEM_PROMPT,
         known_actions=KNOWN_ACTIONS,
-        max_turns=5,
+        max_turns=7,
+        require_tool=True,
     )
 
     question = input("Research question: ").strip()

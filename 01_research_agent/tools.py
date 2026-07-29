@@ -7,6 +7,8 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import date, datetime
+import ssl
+import certifi
 
 
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
@@ -21,8 +23,14 @@ def _request_arxiv(params: dict[str, str | int]) -> ET.Element:
         headers={"User-Agent": USER_AGENT},
     )
 
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+
     try:
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with urllib.request.urlopen(
+            request,
+            timeout=20,
+            context=ssl_context,
+        ) as response:
             content = response.read()
     except Exception as error:
         raise RuntimeError(f"Could not reach the arXiv API: {error}") from error

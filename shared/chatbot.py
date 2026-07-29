@@ -9,7 +9,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
-DEFAULT_MODEL: Final[str] = "gpt-5.4-nano"
+DEFAULT_MODEL: Final[str] = "gpt-5-nano"
 
 
 class ChatBot:
